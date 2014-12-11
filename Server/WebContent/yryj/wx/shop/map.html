@@ -1,0 +1,239 @@
+<!doctype html>
+<html>
+<head>
+<xbasehref="http://www.yirenyijia.com:80/">
+
+<title>地图</title>
+
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta charset="UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+<meta name="viewport"
+	content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"
+	media="(device-height: 568px)">
+<title>服务网点</title>
+<link href="../css/style.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+#map{display: none;}
+#driveMapWrap,#map div.anchorBL,#driveMapWrap div.anchorBL ,#selectCityWrap{display: none;}
+.header .left{left:0;}
+
+
+
+</style>
+</head>
+
+<body>
+<script type="text/javascript">
+//隐藏底部
+document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+WeixinJSBridge.call('hideToolbar');
+});
+</script>
+<div id="hide" onClick="hideList()"></div>
+<div id="shopWrap">
+<div class="header"  onClick="hideList()">
+<div class="left" style="left:10px;">
+<a href="tel:4006666377"><img src="../images/btn_call_normal@2x.png" width="22" height="22"/>亿人亿驾<a>
+</div>
+<div class="header_city" onclick="selectCity();" id="cityName">南京</div>
+<!--切换地图和列表按钮-->
+<div class="right"  onClick="hideList()">
+<img src="../images/map@2x.png" width="48" height="30" id="mapicon"  onclick="changeType(1)"/>
+<img src="../images/list@2x.png" width="48" height="30" id="listicon"  style="display:none;" onclick="changeType(2)"/>
+</div>
+</div>
+<!--头部结束-->
+<div class="menu">
+<div class="area" onClick="showList1()">
+<span id="selectArea">南京</span>
+</div>
+<div class="type" onClick="showList2()" ><span id="serType">服务</span></div>
+<div class="rank" onClick="showList3()"><span id="orderType">距离最近</span></div>
+<!---->
+<div class="list" id="list1">
+<ul class="ul1" id="areaList">
+<li>全城</li>
+</ul>
+<ul class="ul2" id="areaList2">
+</ul>
+</div>
+<!--2-->
+<div class="list" id="list2">
+<ul class="ul1" id="category1">
+</ul>
+<ul class="ul2" id="category2">
+
+</ul>
+</div>
+<!--3-->
+<div class="list" id="list3">
+<ul class="ul3">
+<li val="1" class="current">距离最近</li>
+<li val="0">星级网点</li>
+<li val="2">价格最低</li>
+<li val="4">评分最高</li>
+</ul>
+</div>
+</div>
+<!--网点列表-->
+<div class="shoplist" id="shoplist">
+</div>
+<span class="noShop" id="loadeData">努力加载中...</span>
+<!--地图-->
+<div id="map"></div>
+
+
+</div>
+<!--地图和列表wrap结束-->
+<div id="driveMapWrap">
+<div class="header">
+<div class="left" onclick="goBackShopList();"><img src="../images/back@2x.png" width="48" height="30"></div>
+驾车路线
+<!--<div class="right"><img src="wx/images/share@2x.png" width="48" height="30" /></div>-->
+</div>
+<div id="driveMapDiv"></div>
+</div>
+<!-- 驾车路线结束  -->
+<!--网点详情-->
+<div id="shopinfoWrap">
+<div class="header">
+<div class="left"><img src="../images/back@2x.png" width="48" height="30" ></div>
+网点详情
+<!--<div class="right"><img src="wx/images/share@2x.png" width="48" height="30" /></div>-->
+</div>
+<div class="shopinfo">
+<h1 id="shop_name"></h1>
+<div class="shopPic clearfix">
+<div class="img"><img id="shop_picAddr" src="" /></div>
+<div class="starWrap">
+<em class="star3" id="shop_score"></em>
+<p>排队可能性：<span id="shop_queueingProbability"><span class="red">高</span><span class="yellow">中</span><span class="green">低</span></span></p>
+</div>
+</div>
+<!--图片结束-->
+<div class="mapIco" onclick="drive()">
+<p id="shop_shopAddress"></p>
+</div>
+<a  class="tel" href="tel:" id="shop_shopPhone_1">
+<img src="../images/btn_call_normal@2x.png" width="22" height="22" />
+<span id="shop_shopPhone"></span>
+</a>
+<!--服务类型-->
+<div class="serviceType clearfix">
+<h1>全车标准清洗</h1>
+<ul class="clearfix" id="serviceList">
+<li class="clearfix"><span class="type1">小型车辆清洗</span><del class="price">￥22.5</del><span class="integral">18<i>积分</i></span></li>
+<li class="clearfix"><span class="type1">清洗1</span><del class="price">￥22.5</del><span class="integral">18<i>积分</i></span></li>
+<li class="clearfix"><span class="type1">清洗2</span><del class="price">￥22.5</del><span class="integral">18<i>积分</i></span></li>
+<li class="clearfix"><span class="type1">清洗3</span><del class="price">￥22.5</del><span class="integral">18<i>积分</i></span></li>
+</ul>
+<span class="more" onclick="showMoreService()">更多</span>
+</div>
+<!---->
+<!---->
+<div class="tel otherTitle" >附近其他网点</div>
+
+<div class="otherShopList" id="otherShopList">
+</div>
+</div>
+
+</div>
+<!--城市选择-->
+<div id="selectCityWrap">
+<div class="header">
+<div class="left" onclick="goShowShopWrap();"><img src="../images/back@2x.png" width="48" height="30"></div>
+城市选择
+<!--<div class="right"><img src="images/share@2x.png" width="48" height="30" /></div>-->
+</div>
+<div class="selectCityWrap">
+<div class="title">当前城市：南京
+<!-- <span class="refresh"></span> -->
+</div>
+<ul>
+
+<li onclick="setCitySpan(181);">武汉</li>
+
+<li onclick="setCitySpan(111);">郑州</li>
+
+<li onclick="setCitySpan(121);">长沙</li>
+
+<li onclick="setCitySpan(131);">成都</li>
+
+<li onclick="setCitySpan(201);">南京</li>
+
+<li onclick="setCitySpan(191);">重庆</li>
+
+<li onclick="setCitySpan(161);">济南</li>
+
+<li onclick="setCitySpan(171);">西安</li>
+
+<li onclick="setCitySpan(231);">广州</li>
+
+<li onclick="setCitySpan(251);">深圳</li>
+
+<li onclick="setCitySpan(211);">北京</li>
+
+<li onclick="setCitySpan(221);">上海</li>
+
+</ul>
+</div>
+</div>
+<!-- 城市选择end -->
+	<script type="text/javascript" src="../../js/jquery.min.js"></script>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=HpmfMZfMFytK3Zibhx21ZytN"></script>
+	<!--jhy script type="text/javascript" src="../../js/api.map.baidu.com/api-v=2.0&ak=007b35576fdbe6bd00e6bdac1c5c6cdd.js"></script-->
+	<script type="text/javascript" src="../js/util.js"></script>
+	<script type="text/javascript" src="../../js/category/categoryList201.js"></script>
+	<script type="text/javascript" src="../../js/area/areaList201.js"></script>
+	<script type="text/javascript" src="../js/map.js"></script>
+<script type="text/javascript">
+
+//basePath = "http://www.yirenyijia.com:80/";//jhy stub
+basePath = "http://localhost/yryj/";
+cityGps ="118.77807441,32.05723550";
+userGps ="118.77807441,32.05723550";
+//userGps =null;
+cityCode = "201";
+cityName = "南京";
+
+curGps = cityGps;
+curAreaCode = cityCode;
+
+$(function(){
+ var bodyHeight=$("#hide").height();
+ var bodyWidth=$("#hide").width();
+ //alert(bodyHeight);
+ $("#map,#shoplist").height(bodyHeight-40);
+ $("#driveMapDiv").height(bodyHeight-45);
+ $("#map,#driveMapDiv").width(bodyWidth);
+});
+
+$(document).ready(function() {
+	//到达底部95%时,加载新内容
+	$("#shoplist").scroll(function(){
+		var $this =$(this),
+		viewH =$(this).height(),//可见高度
+		contentH =$(this).get(0).scrollHeight,//内容高度
+		scrollTop =$(this).scrollTop();//滚动高度
+
+		//if(contentH - viewH - scrollTop <= 100) { //到达底部100px时,加载新内容
+		if(scrollTop/(contentH -viewH)>=0.95){//到达底部95%时,加载新内容
+			shopList();
+		}
+		});
+		wxmap.issuegeo();
+		setInterval(function(){//定时获取用户位置
+			wxmap.issuegeo();
+		}, 60*1000)
+	
+	init();
+	shopList();
+	
+})
+</script>
+</body>
+</html>

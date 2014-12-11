@@ -1,0 +1,305 @@
+
+package com.control;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.bson.types.ObjectId;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.dao.SnapDao;
+import com.entity.SnapEntity;
+import com.util.JsonUtil;
+
+@Controller
+public class SnapControl {
+
+    private static final Log logger = LogFactory.getLog(SnapControl.class);
+
+    @Autowired
+    SnapDao snapDao;
+    
+    public class ApList {
+    	
+        public ApList(List<SnapInfo> apList) {
+			super();
+			this.apList = apList;
+		}
+
+		private List<SnapInfo> apList;
+     
+        public List<SnapInfo> getApList() {
+            return apList;
+        }
+     
+        public void setApList(List<SnapInfo> apList) {
+            this.apList = apList;
+        }
+     
+    }
+    @RequestMapping(value="/upload",produces="application/json")
+    @ResponseBody
+    public String upload(HttpServletRequest req, HttpServletResponse reponse,
+    		String from,String id,@RequestBody SnapInfo[] apList) throws UnsupportedEncodingException {
+    	String result;
+        logger.debug("start upload！"+from + ","+id);
+
+        logger.debug(apList.length);
+
+        for (SnapInfo snapInfo : apList) {
+
+            logger.debug(snapInfo.toString());
+		}
+        
+        if(from == null||id == null||id.isEmpty()){
+
+            result = JsonUtil.SendJsonResponse(false, "fail");
+        }else{
+
+            if(from.equals("web") || from.equals("ott")){
+
+                SnapEntity entity = new SnapEntity();
+                entity.setCompareid(id);
+                if(from.equals("web")){
+                    entity.setFrom("【桌面Web后台】");
+                }else{
+                    entity.setFrom("【OTT盒子】");
+                }
+                ArrayList<SnapInfo> list =  new ArrayList(Arrays.asList(apList));
+                SnapInfo boardinfo = list.get(0);
+                list.remove(boardinfo);
+                
+                entity.setApList(list);
+                
+                Date nowTime=new Date();
+                SimpleDateFormat time=new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+                entity.setDatetime(time.format(nowTime));
+                entity.setTime(String.valueOf(nowTime.getTime()));
+                entity.setBoard(boardinfo.board);
+                entity.setComment(boardinfo.comment);
+                
+        		snapDao.save(entity);
+                result = JsonUtil.SendJsonResponse(true, "success");
+            }else{
+
+                result = JsonUtil.SendJsonResponse(false, "fail");
+            }
+            
+        }
+        
+
+        reponse.setContentType("text/html; charset=utf-8");
+        reponse.setCharacterEncoding("utf-8");
+
+        return new String(result.getBytes("utf-8"), "iso-8859-1");
+
+	}
+    
+    @RequestMapping(value="/web_getSnapInfoList")
+    @ResponseBody
+    public ArrayList<SnapEntity> getSnapInfoList(HttpServletRequest req, HttpServletResponse reponse,
+    		String id) throws UnsupportedEncodingException {
+    	String result;
+        logger.debug("web_getSnapInfoList get id！"+id);
+
+        ArrayList<SnapEntity> list = new ArrayList<SnapEntity>();
+        snapDao.getInfoByCompareId(id, list);
+        
+
+        for (SnapEntity snapInfo : list) {
+
+            logger.debug(snapInfo.toString());
+		}
+
+        return list;
+
+	}
+    
+    @RequestMapping(value="/checkself")
+    @ResponseBody
+    public String checkSelf(HttpServletRequest req, HttpServletResponse reponse,
+    		String id) throws UnsupportedEncodingException {
+    	String result;
+        logger.debug("delMarkedRow get id！"+id);
+
+        snapDao.deleteAllById(new ObjectId(id));
+
+        result = "true";
+
+        reponse.setContentType("text/html; charset=utf-8");
+        reponse.setCharacterEncoding("utf-8");
+
+        return new String(result.getBytes("utf-8"), "iso-8859-1");
+
+	}
+    
+    
+    @RequestMapping(value="/delMarkedRow")
+    @ResponseBody
+    public String delMarkedRow(HttpServletRequest req, HttpServletResponse reponse,
+    		String id) throws UnsupportedEncodingException {
+    	String result;
+        logger.debug("delMarkedRow get id！"+id);
+
+        snapDao.deleteAllById(new ObjectId(id));
+
+        result = "true";
+
+        reponse.setContentType("text/html; charset=utf-8");
+        reponse.setCharacterEncoding("utf-8");
+
+        return new String(result.getBytes("utf-8"), "iso-8859-1");
+
+	}
+    
+    @RequestMapping(value="/compareMarkedRow")
+    @ResponseBody
+    public Object compareMarkedRow(HttpServletRequest req, HttpServletResponse reponse,
+    		String id,String id2) throws JsonGenerationException, JsonMappingException, IOException {
+    	String result;
+        logger.debug("compareMarkedRow get id！"+id);
+        logger.debug("compareMarkedRow get id2！"+id2);
+
+        //snapDao.deleteAllById(new ObjectId(id));
+
+        ArrayList<SnapEntity> list = new ArrayList<SnapEntity>();
+        ArrayList<SnapEntity> list2 = new ArrayList<SnapEntity>();
+        
+        snapDao.getInfoById(new ObjectId(id), list);
+        snapDao.getInfoById(new ObjectId(id2), list2);
+        
+        HashMap<String , ArrayList<SnapInfo>> hashcompare = 
+        		new HashMap<String , ArrayList<SnapInfo>> ();
+        
+        for (SnapInfo info : list.get(0).getApList()) {
+			if(!info.getTitle().isEmpty()){
+				ArrayList<SnapInfo> infolist_temp = new ArrayList<SnapInfo>();
+				infolist_temp.add(info);
+				
+				hashcompare.put(info.getPosition(), infolist_temp);
+			}
+		}
+        
+        for (SnapInfo info : list2.get(0).getApList()) {
+			if(!info.getTitle().isEmpty()){
+				
+				if(!hashcompare.containsKey(info.getPosition())){
+					ArrayList<SnapInfo> infolist_temp = new ArrayList<SnapInfo>();
+					SnapInfo info_temp = new SnapInfo("@@snap@@","","","","");
+					infolist_temp.add(info_temp);//填充数据
+					infolist_temp.add(info);
+					hashcompare.put(info.getPosition(), infolist_temp);
+				}else{
+					hashcompare.get(info.getPosition()).add(info);
+				}
+				
+			}
+		}
+        
+
+        Map<String , ArrayList<SnapInfo>> hashcompare_final = 
+        		new LinkedHashMap<String , ArrayList<SnapInfo>> ();
+        List<String> keylist = new ArrayList<String>();
+        Set<String> key_arr = hashcompare.keySet();
+        keylist.addAll(key_arr);
+        
+
+        for  (String key : keylist) {  
+        	
+            logger.debug("compareMarkedRow get key before sort！"+key);
+            
+        }
+        
+        Collections.sort(keylist, new Comparator() {
+            public int compare(Object o1, Object o2) {
+                if(Integer.parseInt(o1.toString())>Integer.parseInt(o2.toString()))
+                     return 1;
+                if(Integer.parseInt(o1.toString())==Integer.parseInt(o2.toString()))
+                    return 0;
+                 else
+                     return -1;
+             }
+         });  
+        
+        for  (String key : keylist) {  
+        	
+            logger.debug("compareMarkedRow get key after sort！"+key);
+            
+        }
+        /*for  (Object key : key_arr) {  
+            Object value = hashcompare.get(key);  
+        }*/
+        
+        for (String key : keylist) {
+
+            hashcompare_final.put((String)key, hashcompare.get(key));
+		}
+        
+        ModelAndView mav = new ModelAndView();  
+        mav.setViewName("compare"); //返回的文件名 
+        mav.addObject("hashmap", hashcompare_final);
+        
+        //return "compare";
+        
+
+        req.getSession().setAttribute("comparelist", keylist);
+
+        List<String> keylist_info = new ArrayList<String>();
+        keylist_info.add("系统id@@:"+list.get(0).getId());
+        keylist_info.add("版型:"+list.get(0).getBoard());
+        keylist_info.add(""+list.get(0).getComment());
+        keylist_info.add("来自:"+list.get(0).getFrom());
+        keylist_info.add("时间:"+list.get(0).getDatetime());
+        req.getSession().setAttribute("comparelist1info", keylist_info);
+        
+        List<String> keylist_info2 = new ArrayList<String>();
+        keylist_info2.add("系统id@@:"+list2.get(0).getId());
+        keylist_info2.add("版型:"+list2.get(0).getBoard());
+        keylist_info2.add(""+list2.get(0).getComment());
+        keylist_info2.add("来自:"+list2.get(0).getFrom());
+        keylist_info2.add("时间:"+list2.get(0).getDatetime());
+        req.getSession().setAttribute("comparelist2info", keylist_info2);
+        
+        req.getSession().setAttribute("test", "aa");
+        
+        
+
+        Map<String, String> value = new HashMap<String, String>();
+        value.put("jhy", "fuck ufi");
+        
+        ObjectMapper mapper = new ObjectMapper();
+
+        //return hashcompare_final;
+        
+        return new ModelAndView("compare", "hashmap", mapper.writeValueAsString(hashcompare_final));// 返回mapname,在jsp中${mapname}直接使用
+        //return mav;
+
+	}
+    
+    
+    
+}

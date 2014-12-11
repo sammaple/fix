@@ -1,0 +1,81 @@
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>ÓÃ»§µÇÂ¼</TITLE>
+<META http-equiv=Content-Type content="text/html">
+
+<script type="text/javascript">
+
+var request = false;
+try {
+  request = new XMLHttpRequest();
+} catch (trymicrosoft) {
+  try {
+    request = new ActiveXObject("Msxml2.XMLHTTP");
+  } catch (othermicrosoft) {
+    try {
+      request = new ActiveXObject("Microsoft.XMLHTTP");
+    } catch (failed) {
+      request = false;
+    }   
+  }
+}
+
+function myLogin()
+{
+	var userName = document.getElementById("userName").value;
+	var password = document.getElementById("password").value;
+	userName = encodeURI(userName);
+	var url = "/CommunityShare/web_user_login?userName="+userName+"&password="+password;
+    //if (!request)
+	{
+    	 request.open("POST", url, true);
+         request.onreadystatechange = loginResponse;
+         request.send(null);
+    }
+}
+
+function loginResponse() {
+    if (request.readyState == 4) {
+      if (request.status == 200) {
+			if(request.responseText =="true"){
+				alert("µÇÂ½³É¹¦");
+				window.location.href = "/CommunityShare/web_userjsp_main";
+			}else{
+				alert("µÇÂ½Ê§°Ü");
+			}
+      } else
+        alert("µÇÂ½Ê§°Ü");
+    }
+  }
+
+
+</script>
+
+
+</HEAD>
+<BODY>
+<P>
+<H3>ÓÃ»§µÇÂ½</H3>
+<P></P>
+<form action="/CommunityShare/web_user_login" method="get">
+  <p>ÓÃ»§Ãû: <input type="text" id="userName" /></p>
+  <p>ÃÜ	   Âë: <input type="password" id="password" /></p>
+  <input type="button" onclick="myLogin()" value="µÇÂ½" />
+</form>
+
+</BODY></HTML>

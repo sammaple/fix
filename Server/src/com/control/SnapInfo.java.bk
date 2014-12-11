@@ -1,0 +1,81 @@
+package com.control;
+
+import java.io.Serializable;
+
+
+public class SnapInfo implements Serializable{
+	
+
+	public SnapInfo() {
+		super();
+	}
+	
+	
+
+	public SnapInfo(String title, String action, String position,
+			String comment, String board) {
+		super();
+		this.title = title;
+		this.action = action;
+		this.position = position;
+		this.comment = comment;
+		this.board = board;
+	}
+
+
+
+	String title;
+	String action;
+	String position;
+	String comment;
+	String board;
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
+	public String getPosition() {
+		return position;
+	}
+
+	public void setPosition(String position) {
+		this.position = position;
+	}
+	
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	public String getBoard() {
+		return board;
+	}
+
+	public void setBoard(String board) {
+		this.board = board;
+	}
+
+	@Override
+	public String toString() {
+		return "SnapInfo [title=" + title + ", action=" + action
+				+ ", position=" + position + ", comment=" + comment
+				+ ", board=" + board + "]";
+	}
+
+
+}

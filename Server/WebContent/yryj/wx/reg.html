@@ -1,0 +1,74 @@
+
+
+<!doctype html>
+<html>
+  <head>
+    <xbasehref="http://www.yirenyijia.com:80/">
+    
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" media="(device-height: 568px)">
+<title>注册/绑定</title>
+<link href="css/style.css"  rel="stylesheet" type="text/css">
+  </head>
+ <body>
+
+<input type="hidden" id="openId" value="o1Fyfjnzhl0dhQVUdNvd_68r0_y0">
+
+<ul class="clearfix switchUl">
+<li class="active">绑定账号</li>
+<li>免费注册</li>
+</ul>
+<!---->
+<div class="whiteWrap">
+<form id="boundForm" action="http://www.kuanter.com/wxreg_bound">
+<div class="inputWrap" id="bindAccount">
+<input class="inputText input1" type="tel" id="bound_mob" maxlength="11" placeholder="卡号/手机号">
+<input class="inputText inputlast" placeholder="密码" id="bound_pass"  maxlength="6" type="password">
+<span  class="inputBtn btnBlue" onMouseDown="mouseDownFun(this)"  onMouseUp="mouseUpFun(this)" onclick="bound()">绑定账号</span>
+<p class="forgetPassword"><a href="tel:4006666377">忘记密码请拨打：400-6666-377</a></p>
+</div>
+</form>
+<div class="inputWrap" id="register">
+<div id="register1">
+<input class="inputText input1" type="tel" maxlength="11" id="reg_mob" placeholder="手机号">
+<input class="inputText inputlast" placeholder="密码" id="reg_pass"  maxlength="6" type="password">
+<span  class="inputBtn btnYellow" onMouseDown="mouseDownFun(this)"  onMouseUp="mouseUpFun(this)" onClick="showCodeDiv();">立即注册</span>
+<p class="center">点击注册即表示已阅读并同意<a href="agreement.html" >《亿人易驾服务协议》</a></p>
+</div>
+<!--注册第1步结束-->
+<div id="register2">
+<p class="tips">激活短信已发送至 <span id="reg_sendMob">135*******45</span></p>
+<input class="inputText inputOne" type="tel" maxlength="6" id="reg_code" placeholder="激活码">
+<span  class="inputBtn btnBlue" onMouseDown="mouseDownFun(this)"  onMouseUp="mouseUpFun(this)" onClick="reg()">确定</span>
+<p class="again"><button id="sendCodeButton"  onclick="resendCode();">180秒后重新发送</button></p>
+</div>
+<!--注册第2步结束-->
+</div>
+
+<div class="inputWrap">
+<div id="register3">
+<h1 class="title">注册成功！</h1>
+<p class="content">恭喜成为亿人易驾会员，在全国超过<span class="yellow">1600</span>家的亿人易驾网点享受永久汽车服务折扣！</p>
+<a href=" "><span  class="inputBtn btnBlue" onMouseDown="mouseDownFun(this)"  onMouseUp="mouseUpFun(this)">去充值</span></a>
+</div>
+<!--注册成功结束-->
+<div id="register4">
+<h1 class="title">绑定成功！</h1>
+<p class="content">您的充值账户余额为<span class="yellow" id="bound_balance">402</span>积分。<!-- 亿人易驾已为您节省<span class="yellow">54</span>元，你比武汉市<span class="yellow">20%</span>人更幸福！</p> -->
+<a href=" "><span class="inputBtn btnBlue"  style="padding:13px 0;" onMouseDown="mouseDownFun(this)"  onMouseUp="mouseUpFun(this)">去充值</span></a>
+</div>
+<!--绑定成功结束-->
+</div>
+</div>
+<script type="text/javascript" src="../js/jquery.min.js"   ></script>
+<script type="text/javascript" src="js/jquery.md5.js"   ></script>
+<script type="text/javascript" src="js/util.js"   ></script>
+<script type="text/javascript" src="js/reg.js"   ></script>
+   <script type="text/javascript">
+   document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+   WeixinJSBridge.call('hideOptionMenu');
+});
+   </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd  
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd 
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
+	default-autowire="byName">
+             
+	<bean id="mongo" class="com.mongodb.Mongo">
+		<constructor-arg value="127.0.0.1"></constructor-arg>
+		<constructor-arg type="int">
+			<value>28018</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="morphia" class="com.google.code.morphia.Morphia">
+	</bean>
+	
+	<bean id="pmDao" class="com.dao.PmDao" scope="singleton">
+		<constructor-arg ref="mongo"></constructor-arg>
+		<constructor-arg ref="morphia"></constructor-arg>
+		<constructor-arg value="bugreporter"></constructor-arg>
+		<constructor-arg value=""></constructor-arg>
+		<constructor-arg value=""></constructor-arg>
+	</bean>
+	
+	
+	<bean id="userDao" class="com.dao.UserDao" scope="singleton">
+		<constructor-arg ref="mongo"></constructor-arg>
+		<constructor-arg ref="morphia"></constructor-arg>
+		<constructor-arg value="bugreporter"></constructor-arg>
+		<constructor-arg value=""></constructor-arg>
+		<constructor-arg value=""></constructor-arg>
+	</bean>
+	
+	<!--bean id="usermanager" class="com.service.UserManager"
+		scope="singleton">
+		<property name="userDao">
+			<ref bean="userDao" />
+		</property>
+	</bean-->
+	
+	<!--context:annotation-config />
+	<context:component-scan base-package="com.control" />
+	<context:component-scan base-package="com.control.aop.aspectj" />
+	 <aop:aspectj-autoproxy proxy-target-class="true" /--> 
+	 
+	 
+	<context:annotation-config />
+	<context:component-scan base-package="com.control.aop.aspectj" />
+	
+	<bean class="com.control.MyApplicationContextUtil"></bean>
+	
+	<!-- ==============================利用spring自己的aop配置================================ -->
+    <!-- 声明一个业务类 -->
+    <bean id="baseBusiness" class="com.control.aop.BaseBusiness" />
+
+    <!-- 声明通知类 -->
+    <bean id="baseBefore" class="com.control.aop.BaseBeforeAdvice" />
+    <bean id="baseAfterReturn" class="com.control.aop.BaseAfterReturnAdvice" />
+    <bean id="baseAfterThrows" class="com.control.aop.BaseAfterThrowsAdvice" />
+    <bean id="baseAround" class="com.control.aop.BaseAroundAdvice" />
+
+    <!-- 指定切点匹配类 -->
+    <bean id="pointcut" class="com.control.aop.Pointcut" />
+
+    <!-- 包装通知，指定切点 -->
+    <bean id="matchBeforeAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+        <property name="pointcut">
+            <ref bean="pointcut" />
+        </property>
+        <property name="advice">
+            <ref bean="baseBefore" />
+        </property>
+    </bean>
+
+    <!-- 使用ProxyFactoryBean 产生代理对象 -->
+    <bean id="businessProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <!-- 代理对象所实现的接口 ，如果有接口可以这样设置 -->
+        <property name="proxyInterfaces">
+            <value>com.control.aop.IBaseBusiness</value>
+        </property>
+
+        <!-- 设置目标对象 -->
+        <property name="target">
+            <ref local="baseBusiness" />
+        </property>
+        <!-- 代理对象所使用的拦截器 -->
+        <property name="interceptorNames">
+            <list>
+                <value>matchBeforeAdvisor</value>
+                <value>baseAfterReturn</value>
+                <value>baseAround</value>
+            </list>
+        </property>
+    </bean>
+    
+    <!-- ==============================利用spring 利用aspect来配置AOP================================ -->
+
+    <!-- 声明一个业务类 -->
+    <bean id="aspectBusiness" class="com.control.aop.aspect.AspectBusiness" />
+
+    <!-- 声明通知类 -->
+    <bean id="aspectAdvice" class="com.control.aop.aspect.AspectAdvice" />
+
+    <aop:config>
+        <aop:aspect id="businessAspect" ref="aspectAdvice">
+            <!-- 配置指定切入的对象 -->
+            <aop:pointcut id="point_cut" expression="execution(* com.control.aop.aspect.*.*(..))" />
+            <!-- 只匹配add方法作为切入点
+            <aop:pointcut id="except_add" expression="execution(* aop.schema.*.add(..))" />
+             -->
+
+            <!-- 前置通知 -->
+            <aop:before method="doBefore" pointcut-ref="point_cut" />
+            <!-- 后置通知 returning指定返回参数 -->
+            <aop:after-returning method="doAfter"
+                pointcut-ref="point_cut" returning="result" />
+            <aop:around method="doAround" pointcut-ref="point_cut"/>
+            <aop:after-throwing method="doThrow" pointcut-ref="point_cut" throwing="e"/>
+        </aop:aspect>
+    </aop:config>
+	
+</beans>

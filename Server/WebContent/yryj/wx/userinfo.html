@@ -1,0 +1,81 @@
+
+
+<!doctype html>
+<html>
+  <head>
+    <xbasehref="http://www.yirenyijia.com:80/">
+    
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" media="(device-height: 568px)">
+<title>个人信息</title>
+<link href="css/style.css" rel="stylesheet" type="text/css">
+<style>
+.inputListWrap .divNormal>span, .inputListWrap .divLast>span {text-align: center;letter-spacing: 20px;}
+.textRight{color:#414141;}
+.L-selected-select::before{border:none;}
+</style>
+<link></head>
+<body>
+<input type="hidden" id="basePath" value="http://www.yirenyijia.com:80/">
+<div class="whiteWrap">
+<div class="aWrap clearfix">
+<a href="javascript:;" class="activeall">基本信息</a>
+</div>
+<div class="accountWrap">
+<!---->
+<div class="inputListWrap">
+<div class="divNormal   clearfix">
+<span>姓名</span>
+<div class="L-select" id="realName"></div>
+</div>
+<!---->
+<div class="divNormal selectH clearfix">
+<span>性别</span>
+<div class="L-select">
+<p class="L-tab">
+<span class="L-item-tab" style="text-align:left;">
+<select class="L-list-select" onchange="editGender(this.value);changeValue(this);" id="gender_select">
+<option value="1">男</option>
+<option value="2">女</option>
+</select>
+<span class="L-selected-select" id="gender">男</span>
+</span>
+
+</p>
+</div>
+</div>
+<!---->
+<div class="divNormal  selectH  clearfix">
+<span>手机</span>
+<div class="L-select " id="mobileNumber">150****0752</div>
+</div>
+<!---->
+<div class="divNormal  selectH  clearfix" >
+<span>邮箱</span>
+<div class="L-select" id="email"></div>
+</div>
+<!---->
+
+<div class="divLast  clearfix">
+<span>地址</span>
+<div class="L-select" id="address"></div>
+</div>
+</div>
+<!---->
+
+</div>
+</div>
+<script type="text/javascript" src="../js/jquery.min.js"  ></script>
+<script type="text/javascript" src="js/jquery.md5.js"  ></script>
+<script type="text/javascript" src="js/util.js"  ></script>
+<script type="text/javascript" src="js/userinfo.js"></script>
+<script type="text/javascript">
+findUserInfo();
+setInterval(function(){
+findUserInfo();
+}, 10000);
+</script>
+
+
+</body></html>
