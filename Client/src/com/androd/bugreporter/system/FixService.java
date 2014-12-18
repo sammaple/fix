@@ -323,7 +323,7 @@ public class FixService extends Service {
 			if (Integer.valueOf(resultstr) < 500000) {
 				resultstr = "512M";
 			} else if (Integer.valueOf(resultstr) >= 500000
-					&& Integer.valueOf(resultstr) < 800000) {
+					&& Integer.valueOf(resultstr) < 900000) {//modify for 1g
 				resultstr = "1G";
 			} else {
 				resultstr = "2G";
