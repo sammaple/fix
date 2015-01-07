@@ -47,7 +47,7 @@ public class FixService extends Service {
 	Ana ana = null;
 	Context ctx = null;
 	boolean need_up_pm = false;//是否需要上传安装详情，计划一天一次
-	long ONEDAY = 24 * 60 * 60;
+	long ONEDAY = 24 * 60 ;//(HOUR)
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -133,14 +133,16 @@ public class FixService extends Service {
 		int counter = mPerferences.getInt("counter", 0);
 
 		SharedPreferences.Editor mEditor = mPerferences.edit();
-		int cr_time = (int) Calendar.getInstance().getTime().getTime() / 1000;
+		//int cr_time = (int) Calendar.getInstance().getTime().getTime() / 1000;
+
+		int cr_time = (int) (Calendar.getInstance().getTime().getTime()/ (1000*60));//MINUTES
 
 		Log.e(MyApplication.TAG, "runStep_Pm in  counter:" + counter
 				+ ",cr_time:" + cr_time);
-		if (cr_time - counter >= ONEDAY || counter == 0) {
+		if (cr_time - counter >= ONEDAY || counter <= 0) {
 
-			mEditor.putInt("counter", cr_time);
-			mEditor.commit();
+			/*mEditor.putInt("counter", cr_time);
+			mEditor.commit();*/
 
 			ctx.getContentResolver().delete(PackageInfoData.CONTENT_URI, null,
 					null);
@@ -594,7 +596,7 @@ public class FixService extends Service {
 			Cursor cr = ctx.getContentResolver().query(
 					PropInfoData.CONTENT_URI, null, null, null, null);
 			
-			if (cr == null || cr.getCount() != 0) {
+			if (cr != null && cr.getCount() != 0) {
                 PropInfoData pd = new PropInfoData();
 				cr.moveToFirst();
 				pd.restore(cr);
@@ -602,13 +604,27 @@ public class FixService extends Service {
 				cr.close();
 				cr = null;
 			}
+
+			try {
+				Thread.sleep(25000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 			if(need_up_pm){
+				int cr_time = (int) (Calendar.getInstance().getTime().getTime()/ (1000*60));//MINUTES
+				SharedPreferences mPerferences = PreferenceManager
+						.getDefaultSharedPreferences(ctx);
+				SharedPreferences.Editor mEditor = mPerferences.edit();
+					mEditor.putInt("counter", cr_time);
+					mEditor.commit();
+					
 				need_up_pm = false;
 				cr = ctx.getContentResolver().query(
 						PackageInfoData.CONTENT_URI, null, null, null, null);
 				
-				if (cr == null || cr.getCount() != 0) {
+				if (cr != null  && cr.getCount() != 0) {
 
 					while (cr.moveToNext()) {
 						PackageInfoData tag = new PackageInfoData();
